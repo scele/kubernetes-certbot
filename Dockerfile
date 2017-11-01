@@ -30,4 +30,4 @@ RUN \
 
 COPY run.sh .
 
-ENTRYPOINT ["sh", "/run.sh"]
+ENTRYPOINT ["/bin/bash", "/run.sh"]

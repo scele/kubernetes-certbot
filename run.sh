@@ -2,6 +2,35 @@
 
 set -e
 
+EXTRA_ARGS=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        --provider)
+        CERT_PROVIDER="$2"
+        shift
+        shift
+        ;;
+        --secret)
+        SECRET_NAME="$2"
+        shift
+        shift
+        ;;
+        --domain)
+        CERT_DOMAIN="$2"
+        shift
+        shift
+        ;;
+        *)
+        EXTRA_ARGS+=("$1")
+        shift
+        ;;
+    esac
+done
+set -- "${EXTRA_ARGS[@]}"
+
 if kubectl get secret ${SECRET_NAME}; then
     echo "Secret ${SECRET_NAME} already exists, nothing to do."
     exit 0
@@ -49,6 +78,7 @@ EOF
 elif [ "$CERT_PROVIDER" = "letsencrypt" ]; then
 
     echo "Requesting certificate from LetsEncrypt for ${CERT_DOMAIN}"
+    mkdir -p /etc/letsencrypt
     certbot certonly \
         -n --agree-tos \
         -d ${CERT_DOMAIN} \
